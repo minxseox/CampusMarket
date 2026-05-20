@@ -55,11 +55,10 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다. id=" + id));
 
-        // 엔티티 내부 메서드를 실행해 상태값을 안전하게 변경 (오타 검증 포함)
+
         product.updateStatus(newStatus);
 
-        // 🌟 중요: JPA 영속성 컨텍스트 덕분에 따로 repository.save()를 안 쳐도
-        // 메서드가 끝날 때 DB의 데이터가 알아서 자동으로 수정됩니다! (Dirty Checking)
+
     }
 
     /**
