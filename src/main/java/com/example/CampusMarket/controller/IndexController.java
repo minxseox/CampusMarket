@@ -14,6 +14,8 @@ public class IndexController {
 
         model.addAttribute("userName", "민서");
 
+    @GetMapping("/")
+    public String index() {
         return "index"; // templates/index.mustache로 이동
     } */
 
@@ -33,11 +35,11 @@ public class IndexController {
 
         return "index";
         }
-    
+
     @GetMapping("/product/{id}")
     public String productDetail(@PathVariable Long id, Model model) {
         model.addAttribute("id", id);
-        
+
         return "product/detail";
         }
 }
