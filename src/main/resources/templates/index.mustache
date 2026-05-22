@@ -14,6 +14,27 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col-12">
+        <h5 class="fw-bold mb-3" style="letter-spacing: -0.5px;">판매 상태</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="/" class="btn btn-capsule">전체</a>
+            <a href="/?status=SALE" class="btn btn-capsule">판매중</a>
+            <a href="/?status=RESERVED" class="btn btn-capsule">예약중</a>
+            <a href="/?status=SOLD" class="btn btn-capsule">판매완료</a>
+        </div>
+    </div>
+</div>
+
+<form action="/" method="get" class="row mb-4">
+    <div class="col-md-10">
+        <input type="text" name="keyword" class="form-control" placeholder="상품명을 검색하세요">
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-dark w-100">검색</button>
+    </div>
+</form>
+
 <div class="row mb-3 mt-5">
     <div class="col-12">
         <h4 class="fw-bold" style="letter-spacing: -0.5px;">전체 상품</h4>
@@ -118,7 +139,7 @@
     /* 이미지 없음 회색 영역 고정 높이 */
     .bg-light-gray {
         background-color: #eaeaea;
-        height: 240://px;
+        height: 240px;
         min-height: 240px;
         font-size: 0.95rem;
         letter-spacing: -0.5px;
