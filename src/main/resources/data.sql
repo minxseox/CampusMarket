@@ -1,0 +1,2 @@
+INSERT INTO product (title, content, price, status) VALUES ('맥북 에어 M2 팝니다', '상태 아주 깨끗하고 배터리 효율 95%입니다. 쿨거래 원해요!', 1200000, '판매중');
+INSERT INTO product (title, content, price, status) VALUES ('아이폰 15 프로 화이트', '액정 기스 전혀 없습니다. 케이스도 같이 드려요.', 950000, '예약중');
