@@ -1,11 +1,16 @@
-package com.example.CampusMarket.domain;
+package com.example.CampusMarket.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
-@Getter @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Getter
 public class SiteUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +24,7 @@ public class SiteUser {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
+    private String nickname;
 }
