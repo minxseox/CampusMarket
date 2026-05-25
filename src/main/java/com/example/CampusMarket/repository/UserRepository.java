@@ -1,6 +1,6 @@
 package com.example.CampusMarket.repository;
 
-import com.example.CampusMarket.domain.SiteUser;
+import com.example.CampusMarket.entity.SiteUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
