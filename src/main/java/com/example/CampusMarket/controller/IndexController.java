@@ -11,6 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -22,7 +25,6 @@ public class IndexController {
 
     /**
      * 1. 메인 대문 경로 (http://localhost:8080/)
-     * 로그인 안 한 사람은 로그인창으로 튕겨냅니다.
      */
     @GetMapping("/")
     public String index(HttpServletRequest request, Model model) {
@@ -66,15 +68,59 @@ public class IndexController {
     }
 
     /**
-     * 3. 상품 상세 페이지 조회
-     * ⚙️ [최종 조치 완료] 하이픈 버그와 404/400 뺑뺑이 에러를 완벽히 해결하는 정석 경로 조준!
+     * 3. [수정 완료] 상품 상세 페이지 조회
+     * 중복 매핑 충돌을 방지하기 위해 숫자 정규식 패턴을 유지합니다.
      */
-    @GetMapping("/product/{id}")
-    public String productDetail(@PathVariable Long id, Model model) {
-        // 상세 페이지에서 꺼내 쓸 수 있도록 상품 고유 ID를 담아줍니다.
-        model.addAttribute("id", id);
+    @GetMapping("/product/{id:[0-9]+}")
+    public String productDetail(@PathVariable Long id, Model model, HttpServletRequest request) {
+        // 상세 창에서 뿌려줄 진짜 단건 데이터를 DB에서 가져옵니다.
+        Product product = productService.findById(id);
 
-        // 🎯 templates/product/product_detail.mustache 위치를 정확히 가리키도록 수정했습니다.
+        // 💡 [핵심 추가] 현재 로그인한 사람이 이 상품의 작성자인지 확인합니다.
+        boolean isAuthor = false;
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loginUser") != null) {
+            SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+
+            // 상품에 작성자가 존재하고, 로그인한 유저 닉네임과 작성자 닉네임이 같으면 본인!
+            if (product.getAuthor() != null && loginUser.getNickname().equals(product.getAuthor().getNickname())) {
+                isAuthor = true;
+            }
+        }
+
+        // html 주머니에 변수 고리를 걸어 전달합니다.
+        model.addAttribute("id", id);
+        model.addAttribute("product", product);
+
+        // 💡 템플릿 엔진이 알 수 있도록 isAuthor 값(true/false)을 담아줍니다.
+        model.addAttribute("isAuthor", isAuthor);
+
+        // templates/product/product_detail.mustache 가동!
         return "product/product_detail";
+    }
+
+    /**
+     * 4. 상품 삭제 처리 API
+     */
+    @DeleteMapping("/api/product/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id, HttpServletRequest request) {
+        try {
+            // 세션 확인
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("loginUser") == null) {
+                return ResponseEntity.status(401).body("로그인이 필요한 서비스입니다.");
+            }
+
+            // 로그인한 유저의 정보(SiteUser)를 꺼냅니다.
+            SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+
+            // 서비스 단의 delete 메서드에 '상품 ID'와 '로그인한 유저의 닉네임'을 함께 던져줍니다.
+            productService.delete(id, loginUser.getNickname());
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

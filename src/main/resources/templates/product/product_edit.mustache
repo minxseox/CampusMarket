@@ -1,0 +1,119 @@
+{{>layout/header}}
+
+<div class="container my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">상품 수정하기</h3>
+        <a href="/product/{{product.id}}" class="btn btn-outline-secondary btn-sm">취소하고 돌아가기</a>
+    </div>
+
+    <div class="card p-5 shadow-sm max-width-form mx-auto">
+        <form id="editForm">
+            <input type="hidden" id="productId" value="{{product.id}}">
+
+            <div class="mb-4">
+                <label for="title" class="form-label fw-bold text-muted">상품 제목</label>
+                <input type="text"
+                       class="form-control form-control-lg"
+                       id="title"
+                       value="{{product.title}}"
+                       required placeholder="제목을 입력하세요">
+            </div>
+
+            <div class="mb-4">
+                <label for="price" class="form-label fw-bold text-muted">가격 (₩)</label>
+                <input type="number"
+                       class="form-control form-control-lg"
+                       id="price"
+                       value="{{product.price}}"
+                       required placeholder="가격을 입력하세요 (숫자만)">
+            </div>
+
+            <div class="mb-4">
+                <label for="content" class="form-label fw-bold text-muted">설명</label>
+                <textarea class="form-control"
+                          id="content"
+                          rows="8"
+                          required placeholder="상품에 대한 설명을 상세히 적어주세요...">{{product.content}}</textarea>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-flex gap-3">
+                <a href="/product/{{product.id}}" class="btn btn-outline-secondary w-50 py-2">취소</a>
+                <button type="button" onclick="updateProduct()" class="btn btn-primary w-50 py-2 fw-bold">수정 완료</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<style>
+    /* 폼이 너무 넓어지지 않도록 최대 너비 제한 */
+    .max-width-form {
+        max-width: 700px;
+    }
+
+    .form-control:focus {
+        border-color: #6c757d;
+        box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
+    }
+
+    .btn-primary {
+        background-color: #11c16e;
+        border-color: #11c16e;
+    }
+
+    .btn-primary:hover {
+        background-color: #0ea65e;
+        border-color: #0ea65e;
+    }
+</style>
+
+<script>
+    function updateProduct() {
+        const productId = document.getElementById("productId").value;
+
+        // 수정된 데이터 긁어오기
+        const data = {
+            title: document.getElementById("title").value,
+            price: parseInt(document.getElementById("price").value),
+            content: document.getElementById("content").value
+        };
+
+        // 입력값 유효성 기본 체크
+        if (!data.title.trim() || !data.price || !data.content.trim()) {
+            alert("모든 필드를 빠짐없이 입력해주세요.");
+            return;
+        }
+
+        if (!confirm("상품 정보를 수정하시겠습니까?")) {
+            return;
+        }
+
+        // 💡 팀의 수정 API 주소 규칙에 맞게 fetch 요청을 보냅니다.
+        // 보통 수정은 PUT 혹은 POST를 사용합니다. 여기서는 일반적인 /api/v1/product/{id} 형태로 예시를 들었습니다.
+        fetch('/api/v1/product/' + productId, {
+            method: 'PUT', // 혹은 팀원 설계에 따라 'POST'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+                .then(response => {
+                    // 백엔드가 빌더나 String "success" 등을 어떻게 주느냐에 따라 처리
+                    if (response.ok) {
+                        alert("상품 정보가 성공적으로 수정되었습니다.");
+                        window.location.href = '/product/' + productId; // 수정 완료 후 상세페이지로 이동
+                    } else {
+                        alert("상품 수정에 실패했습니다. 입력값을 확인해주세요.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("서버와 통신 중 에러가 발생했습니다.");
+                });
+    }
+</script>
+
+{{>layout/footer}}
