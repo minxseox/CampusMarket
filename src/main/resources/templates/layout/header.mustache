@@ -80,22 +80,15 @@
 
             {{#nickname}}
                 <span class="user-nav-item me-1"><strong>{{nickname}}</strong>님</span>
-                <a href="/item/new" class="btn btn-black text-decoration-none">상품 등록</a>
-            {{#userName}}
-                <span class="user-nav-item me-1">{{userName}} 김</span>
                 <a href="/product/save" class="btn btn-black text-decoration-none">상품 등록</a>
                 <a href="/mypage" class="btn btn-outline-gray text-decoration-none">마이페이지</a>
                 <a href="/user/logout" class="btn btn-outline-gray text-decoration-none">로그아웃</a>
             {{/nickname}}
-            {{/userName}}
 
             {{^nickname}}
                 <a href="/user/login" class="btn btn-outline-gray text-decoration-none">로그인</a>
                 <a href="/user/signup" class="btn btn-outline-gray text-decoration-none">회원가입</a>
             {{/nickname}}
-            {{^userName}}
-                <a href="/login" class="btn btn-outline-gray text-decoration-none" style="padding: 6px 12px; font-size: 0.85rem;">로그인</a>
-            {{/userName}}
 
         </div>
 

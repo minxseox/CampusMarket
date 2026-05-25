@@ -4,12 +4,12 @@
     <div class="col-12">
         <h5 class="fw-bold mb-3" style="letter-spacing: -0.5px;">카테고리</h5>
         <div class="d-flex flex-wrap gap-2">
-            <a href="/" class="btn btn-capsule active">전체</a>
-            <a href="/?category=BOOK" class="btn btn-capsule">전공책</a>
-            <a href="/?category=ITEM" class="btn btn-capsule">비품</a>
-            <a href="/?category=DIGITAL" class="btn btn-capsule">전자기기</a>
-            <a href="/?category=CLOTHES" class="btn btn-capsule">의류</a>
-            <a href="/?category=ETC" class="btn btn-capsule">기타</a>
+            <button onclick="filter('category', 'ALL')" class="btn btn-capsule" data-category="ALL">전체</button>
+            <button onclick="filter('category', 'BOOK')" class="btn btn-capsule" data-category="BOOK">전공책</button>
+            <button onclick="filter('category', 'ITEM')" class="btn btn-capsule" data-category="ITEM">비품</button>
+            <button onclick="filter('category', 'DIGITAL')" class="btn btn-capsule" data-category="DIGITAL">전자기기</button>
+            <button onclick="filter('category', 'CLOTHES')" class="btn btn-capsule" data-category="CLOTHES">의류</button>
+            <button onclick="filter('category', 'ETC')" class="btn btn-capsule" data-category="ETC">기타</button>
         </div>
     </div>
 </div>
@@ -18,15 +18,15 @@
     <div class="col-12">
         <h5 class="fw-bold mb-3" style="letter-spacing: -0.5px;">판매 상태</h5>
         <div class="d-flex flex-wrap gap-2">
-            <a href="/" class="btn btn-capsule">전체</a>
-            <a href="/?status=SALE" class="btn btn-capsule">판매중</a>
-            <a href="/?status=RESERVED" class="btn btn-capsule">예약중</a>
-            <a href="/?status=SOLD" class="btn btn-capsule">판매완료</a>
+            <button onclick="filter('status', 'ALL')" class="btn btn-capsule" data-status="ALL">전체</button>
+            <button onclick="filter('status', 'SALE')" class="btn btn-capsule" data-status="SALE">판매중</button>
+            <button onclick="filter('status', 'RESERVED')" class="btn btn-capsule" data-status="RESERVED">예약중</button>
+            <button onclick="filter('status', 'SOLD')" class="btn btn-capsule" data-status="SOLD">판매완료</button>
         </div>
     </div>
 </div>
 
-<form action="/" method="get" class="row mb-4">
+<form action="/main" method="get" class="row mb-4">
     <div class="col-md-10">
         <input type="text" name="keyword" class="form-control" placeholder="상품명을 검색하세요">
     </div>
@@ -46,7 +46,6 @@
     {{#products}}
         <div class="col">
             <a href="/product/{{id}}" class="card h-100 product-card text-decoration-none text-dark">
-
                 <div class="card-img-top bg-light-gray d-flex align-items-center justify-content-center text-muted">
                     {{#imagePath}}
                         <img src="{{imagePath}}" alt="{{title}}" class="w-100 h-100 object-fit-cover rounded-top-2">
@@ -55,23 +54,17 @@
                         <span>이미지 없음</span>
                     {{/imagePath}}
                 </div>
-
                 <div class="card-body p-3 d-flex flex-column justify-content-between">
                     <div>
-                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 1.05rem;">{{locationTag}}</h6>
-                        <p class="text-secondary mb-3 text-truncate" style="font-size: 0.9rem;">{{title}}</p>
+                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 1.05rem;">{{title}}</h6>
+                        <p class="text-secondary mb-3 text-truncate" style="font-size: 0.9rem;">{{content}}</p>
                     </div>
-
                     <div class="d-flex justify-content-between align-items-center mt-auto">
-                        <span class="fw-bold text-dark" style="font-size: 1.15rem;">₩{{priceValue}}</span>
+                        <span class="fw-bold text-dark" style="font-size: 1.15rem;">₩{{price}}</span>
 
-                        <span class="badge-status {{statusClass}}">
-                            {{statusText}}
+                        <span class="badge-status status-sale">
+                            {{status}}
                         </span>
-                    </div>
-
-                    <div class="text-muted mt-2 border-top pt-2" style="font-size: 0.75rem;">
-                        {{categoryText}}
                     </div>
                 </div>
             </a>
@@ -80,23 +73,19 @@
 
     {{^products}}
         <div class="col">
-            <a href="/product/1" class="card h-100 product-card text-decoration-none text-dark">
+            <div class="card h-100 product-card text-decoration-none text-dark">
                 <div class="card-img-top bg-light-gray d-flex align-items-center justify-content-center text-muted">
                     <span>이미지 없음</span>
                 </div>
                 <div class="card-body p-3">
-                    <h6 class="fw-bold mb-1 text-dark" style="font-size: 1.05rem;"> 전공책</h6>
-                    <p class="text-secondary mb-3 text-truncate" style="font-size: 0.9rem;">필기감 있음</p>
-
+                    <h6 class="fw-bold mb-1 text-dark" style="font-size: 1.05rem;">등록된 상품이 없습니다.</h6>
+                    <p class="text-secondary mb-3 text-truncate" style="font-size: 0.9rem;">첫 상품을 등록해 보세요!</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-dark" style="font-size: 1.15rem;">₩25,000</span>
-                        <span class="badge-status status-sale">판매중</span>
-                    </div>
-                    <div class="text-muted mt-2 border-top pt-2" style="font-size: 0.75rem;">
-                        전자기기
+                        <span class="fw-bold text-dark" style="font-size: 1.15rem;">₩0</span>
+                        <span class="badge-status status-sold">대기중</span>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
     {{/products}}
 
@@ -119,12 +108,12 @@
         border-color: #cccccc;
     }
     .btn-capsule.active {
-        background-color: #111111;
-        border-color: #111111;
-        color: #ffffff;
+        background-color: #111111 !important;
+        border-color: #111111 !important;
+        color: #ffffff !important;
     }
 
-    /* 상품 카드 기본 틀 */
+    /* 상품 카드 및 기타 스타일 유지 */
     .product-card {
         border: 1px solid #eef0f2;
         border-radius: 12px !important;
@@ -135,38 +124,55 @@
         transform: translateY(-4px);
         box-shadow: 0 8px 20px rgba(0,0,0,0.04);
     }
-
-    /* 이미지 없음 회색 영역 고정 높이 */
     .bg-light-gray {
         background-color: #eaeaea;
         height: 240px;
         min-height: 240px;
         font-size: 0.95rem;
-        letter-spacing: -0.5px;
     }
-
-    /* 상태 뱃지 공통 스타일 */
     .badge-status {
         padding: 4px 10px;
         border-radius: 20px;
         font-size: 0.75rem;
         font-weight: 600;
     }
-    /* 판매중 (연한 초록) */
-    .status-sale {
-        background-color: #e8f9f1;
-        color: #11c16e;
-    }
-    /* 예약중 (연한 주황) */
-    .status-reserved {
-        background-color: #fff6e6;
-        color: #ff9f00;
-    }
-    /* 판매완료 (연한 회색) */
-    .status-sold {
-        background-color: #f1f3f5;
-        color: #868e96;
-    }
+    .status-sale { background-color: #e8f9f1; color: #11c16e; }
+    .status-reserved { background-color: #fff6e6; color: #ff9f00; }
+    .status-sold { background-color: #f1f3f5; color: #868e96; }
 </style>
+
+<script>
+    function filter(type, value) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (value === 'ALL') {
+            urlParams.delete(type);
+        } else {
+            urlParams.set(type, value);
+        }
+        window.location.href = '/main?' + urlParams.toString();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategory = urlParams.get('category');
+        const currentStatus = urlParams.get('status');
+
+        if (currentCategory) {
+            const targetBtn = document.querySelector(`[data-category="${currentCategory}"]`);
+            if (targetBtn) targetBtn.classList.add('active');
+        } else {
+            const allBtn = document.querySelector('[data-category="ALL"]');
+            if (allBtn) allBtn.classList.add('active');
+        }
+
+        if (currentStatus) {
+            const targetBtn = document.querySelector(`[data-status="${currentStatus}"]`);
+            if (targetBtn) targetBtn.classList.add('active');
+        } else {
+            const allBtn = document.querySelector('[data-status="ALL"]');
+            if (allBtn) allBtn.classList.add('active');
+        }
+    });
+</script>
 
 {{>layout/footer}}
