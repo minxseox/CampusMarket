@@ -1,7 +1,9 @@
 package com.example.CampusMarket.controller;
 
+import com.example.CampusMarket.entity.Product;
 import com.example.CampusMarket.entity.SiteUser;
 import com.example.CampusMarket.dto.UserForm;
+import com.example.CampusMarket.repository.ProductRepository;
 import com.example.CampusMarket.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -10,12 +12,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
+    private final ProductRepository productRepository;
 
     @GetMapping("/signup")
     public String signup(HttpServletRequest request, Model model) {
@@ -68,5 +74,31 @@ public class UserController {
             session.invalidate();
         }
         return "redirect:/";
+    }
+
+    @GetMapping("/mypage")
+    public String mypage(HttpServletRequest request, Model model) {
+
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loginUser") == null) {
+            return "redirect:/user/login";
+        }
+
+        SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+        model.addAttribute("nickname", loginUser.getNickname());
+        model.addAttribute("email", loginUser.getEmail());
+
+        if (loginUser.getCreatedDate() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+            String formattedDate = loginUser.getCreatedDate().format(formatter);
+            model.addAttribute("createdDate", formattedDate);
+        } else {
+            model.addAttribute("createdDate", "정보 없음");
+        }
+
+        List<Product> products = productRepository.findByAuthor(loginUser);
+        model.addAttribute("products", products);
+
+        return "user/mypage";
     }
 }

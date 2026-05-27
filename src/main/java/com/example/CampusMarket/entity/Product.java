@@ -61,4 +61,22 @@ public class Product {
         }
         this.status = status;
     }
+
+    public String getStatusColor() {
+        if (ProductStatus.SALE.equals(this.status)) {
+            return "#198754";
+        } else if (ProductStatus.RESERVED.equals(this.status)) {
+            return "#ffc107";
+        } else if (ProductStatus.SOLD.equals(this.status)) {
+            return "#6c757d";
+        }
+        return "#000000";
+    }
+
+    public String getStatusTextColor() {
+        if (ProductStatus.RESERVED.equals(this.status)) {
+            return "#000000";
+        }
+        return "#ffffff";
+    }
 }

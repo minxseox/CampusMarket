@@ -1,7 +1,7 @@
 package com.example.CampusMarket.service;
 
 import com.example.CampusMarket.entity.Product;
-import com.example.CampusMarket.entity.ProductRepository;
+import com.example.CampusMarket.repository.ProductRepository;
 import com.example.CampusMarket.entity.ProductStatus;
 import com.example.CampusMarket.entity.SiteUser;
 import lombok.RequiredArgsConstructor;
