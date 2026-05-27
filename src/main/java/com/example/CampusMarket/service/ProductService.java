@@ -22,11 +22,12 @@ public class ProductService {
      */
     @Transactional
     // 💡 String author -> SiteUser author 로 변경!
-    public Long save(String title, String content, int price, SiteUser author) {
+    public Long save(String title, String content, int price, String category, SiteUser author) {
         Product product = Product.builder()
                 .title(title)
                 .content(content)
                 .price(price)
+                .category(category)
                 .status(ProductStatus.SALE)
                 .author(author) // 이제 SiteUser 객체를 받으므로 정상 작동합니다.
                 .build();
@@ -48,6 +49,44 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public List<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Product> findByFilter(String category, String status, String keyword) {
+
+        boolean hasCategory = category != null && !category.isBlank();
+        boolean hasStatus = status != null && !status.isBlank();
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+
+        if (hasCategory && hasStatus && hasKeyword) {
+            return productRepository.findByCategoryAndStatusAndTitleContaining(category, status, keyword);
+        }
+
+        if (hasCategory && hasStatus) {
+            return productRepository.findByCategoryAndStatus(category, status);
+        }
+
+        if (hasCategory && hasKeyword) {
+            return productRepository.findByCategoryAndTitleContaining(category, keyword);
+        }
+
+        if (hasStatus && hasKeyword) {
+            return productRepository.findByStatusAndTitleContaining(status, keyword);
+        }
+
+        if (hasCategory) {
+            return productRepository.findByCategory(category);
+        }
+
+        if (hasStatus) {
+            return productRepository.findByStatus(status);
+        }
+
+        if (hasKeyword) {
+            return productRepository.findByTitleContaining(keyword);
+        }
+
         return productRepository.findAll();
     }
 

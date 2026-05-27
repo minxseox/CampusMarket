@@ -22,6 +22,9 @@ public class Product {
 
     private int price;
 
+    @Column(nullable = false)
+    private String category;
+
     // 🌟 일반 String 타입으로 변경하여 글자를 그대로 저장합니다!
     @Column(nullable = false)
     private String status;
@@ -32,13 +35,12 @@ public class Product {
     private SiteUser author;
 
     @Builder
-    public Product(String title, String content, int price, String status, SiteUser author) {
+    public Product(String title, String content, int price, String status, String category, SiteUser author) {
         this.title = title;
         this.content = content;
         this.price = price;
-        // 🌟 기본값으로 ProductStatus 클래스에 정의해둔 "판매중" 글자를 넣어줍니다.
+        this.category = category;
         this.status = (status != null) ? status : ProductStatus.SALE;
-        // 💡 [추가 완료] 객체를 만들 때 작성자 정보도 함께 넣습니다.
         this.author = author;
     }
 
@@ -60,5 +62,17 @@ public class Product {
             throw new IllegalArgumentException("올바른 상품 상태(판매중, 예약중, 판매완료)가 아닙니다!");
         }
         this.status = status;
+    }
+
+    public boolean isSale() {
+        return "판매중".equals(this.status);
+    }
+
+    public boolean isReserved() {
+        return "예약중".equals(this.status);
+    }
+
+    public boolean isSold() {
+        return "판매완료".equals(this.status);
     }
 }

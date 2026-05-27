@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.http.ResponseEntity;
+import com.example.CampusMarket.service.CommentService;
+import com.example.CampusMarket.entity.Comment;
 
 import java.util.List;
 
@@ -22,6 +24,7 @@ import java.util.List;
 public class IndexController {
 
     private final ProductService productService;
+    private final CommentService commentService;
 
     /**
      * 1. 메인 대문 경로 (http://localhost:8080/)
@@ -42,6 +45,7 @@ public class IndexController {
     public String mainPage(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword,
             HttpServletRequest request,
             Model model
     ) {
@@ -54,8 +58,11 @@ public class IndexController {
             }
         }
 
-        // [작업 2] 📦 진짜 DB 상품 엔티티 리스트를 'findAll()'로 싹 긁어옵니다.
-        List<Product> products = productService.findAll();
+        if (keyword == null) {
+            keyword = "";
+        }
+
+        List<Product> products = productService.findByFilter(category, status, keyword);
 
         // [작업 3] 🎯 index.mustache 주머니에 진짜 상품 데이터를 완벽하게 꽂아줍니다.
         model.addAttribute("products", products);
@@ -63,6 +70,7 @@ public class IndexController {
         // 필터링 상태 유지용 데이터
         model.addAttribute("category", category);
         model.addAttribute("status", status);
+        model.addAttribute("keyword", keyword);
 
         return "index"; // templates/index.mustache 가동!
     }
@@ -82,11 +90,15 @@ public class IndexController {
         if (session != null && session.getAttribute("loginUser") != null) {
             SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
 
+            model.addAttribute("nickname", loginUser.getNickname());
+
             // 상품에 작성자가 존재하고, 로그인한 유저 닉네임과 작성자 닉네임이 같으면 본인!
             if (product.getAuthor() != null && loginUser.getNickname().equals(product.getAuthor().getNickname())) {
                 isAuthor = true;
             }
         }
+
+        List<Comment> comments = commentService.findByProduct(product);
 
         // html 주머니에 변수 고리를 걸어 전달합니다.
         model.addAttribute("id", id);
@@ -94,6 +106,7 @@ public class IndexController {
 
         // 💡 템플릿 엔진이 알 수 있도록 isAuthor 값(true/false)을 담아줍니다.
         model.addAttribute("isAuthor", isAuthor);
+        model.addAttribute("comments", comments);
 
         // templates/product/product_detail.mustache 가동!
         return "product/product_detail";

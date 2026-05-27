@@ -4,6 +4,7 @@ import com.example.CampusMarket.dto.ProductSaveRequestDto;
 import com.example.CampusMarket.entity.Product;
 import com.example.CampusMarket.entity.ProductStatus;
 import com.example.CampusMarket.entity.SiteUser;
+import com.example.CampusMarket.service.CommentService;
 import com.example.CampusMarket.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -13,12 +14,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
 @Controller
 public class ProductController {
 
     private final ProductService productService;
+    private final CommentService commentService;
 
     /**
      * 1. 상품 등록 페이지로 이동
@@ -48,7 +51,13 @@ public class ProductController {
         SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
 
         // SiteUser 객체를 직접 넘겨 작성자 정보 저장
-        productService.save(requestDto.getTitle(), requestDto.getContent(), requestDto.getPrice(), loginUser);
+        productService.save(
+        requestDto.getTitle(),
+        requestDto.getContent(),
+        requestDto.getPrice(),
+        requestDto.getCategory(),
+        loginUser
+        );
 
         return "success";
     }
@@ -116,5 +125,45 @@ public class ProductController {
         productService.changeStatus(id, finalStatus, loginUser.getNickname());
 
         return "redirect:/product/" + id;
+    }
+
+    @PostMapping("/product/{productId}/comments")
+    public String saveComment(@PathVariable Long productId,
+                          @RequestParam String content,
+                          HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("loginUser") == null) {
+            return "redirect:/user/login";
+        }
+
+        SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+
+        commentService.save(productId, content, loginUser);
+
+        return "redirect:/product/" + productId;
+    }
+
+    @PostMapping("/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable Long commentId,
+                            @RequestParam Long productId,
+                            HttpServletRequest request,
+                            RedirectAttributes redirectAttributes) {
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("loginUser") == null) {
+            return "redirect:/user/login";
+        }
+
+        SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+
+        try {
+            commentService.delete(commentId, loginUser);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
+        return "redirect:/product/" + productId;
     }
 }

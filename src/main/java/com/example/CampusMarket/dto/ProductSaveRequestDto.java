@@ -24,6 +24,7 @@ public class ProductSaveRequestDto {
     // 🌟 @PositiveOrZero: 0원 또는 양수만 허용합니다. (마이너스 금액 차단!)
     @PositiveOrZero(message = "가격은 0원 이상이어야 합니다.")
     private int price;
+    private String category;
 
     @Builder
     public ProductSaveRequestDto(String title, String content, int price) {
