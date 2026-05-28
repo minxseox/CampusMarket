@@ -28,14 +28,11 @@ public class IndexController {
 
     /**
      * 1. 메인 대문 경로 (http://localhost:8080/)
+     * 💡 [수정됨] 접속 시 묻지도 따지지도 않고 바로 메인 화면으로 넘깁니다!
      */
     @GetMapping("/")
-    public String index(HttpServletRequest request, Model model) {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("loginUser") != null) {
-            return "redirect:/main";
-        }
-        return "redirect:/user/login";
+    public String index() {
+        return "redirect:/main";
     }
 
     /**

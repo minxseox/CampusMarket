@@ -34,4 +34,9 @@ public class SiteUser {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdDate;
+
+    public void updateProfile(String email, String nickname) {
+        this.email = email;
+        this.nickname = nickname;
+    }
 }
