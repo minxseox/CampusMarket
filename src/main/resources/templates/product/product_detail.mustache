@@ -27,8 +27,8 @@
                 <div class="mb-3">
                     <span class="badge-status me-2
                     {{#product.sale}}status-sale{{/product.sale}}
-                    {{#product.reserved}}status-reserved{{/product.reserved}}
-                    {{#product.sold}}status-sold{{/product.sold}}">
+                        {{#product.reserved}}status-reserved{{/product.reserved}}
+                        {{#product.sold}}status-sold{{/product.sold}}">
                         {{product.status}}
                     </span>
                 </div>
@@ -42,6 +42,17 @@
 
                 <p class="text-muted mb-1">설명</p>
                 <p>{{product.content}}</p>
+
+                {{^isAuthor}}
+                    <hr>
+                    {{#product.sale}}
+                        <a href="/product/{{id}}/payment" class="btn btn-dark w-100 py-3 fw-bold mt-2" style="font-size: 1.1rem; border-radius: 8px;">결제하기</a>
+                    {{/product.sale}}
+
+                    {{^product.sale}}
+                        <button type="button" onclick="alert('현재 판매 중인 상품이 아니므로 결제가 불가합니다.');" class="btn btn-dark w-100 py-3 fw-bold mt-2" style="font-size: 1.1rem; border-radius: 8px;">결제하기</button>
+                    {{/product.sale}}
+                {{/isAuthor}}
 
                 {{#isAuthor}}
                     <hr>
@@ -97,12 +108,12 @@
                     </div>
 
                     <form action="/comment/{{id}}/delete" method="post">
-                    <input type="hidden" name="productId" value="{{product.id}}">
+                        <input type="hidden" name="productId" value="{{product.id}}">
 
-                    <button type="submit"
-                            class="btn btn-link text-dark text-decoration-none">
-                        삭제
-                    </button>
+                        <button type="submit"
+                                class="btn btn-link text-dark text-decoration-none">
+                            삭제
+                        </button>
                     </form>
                 </div>
 
@@ -114,6 +125,8 @@
             <p class="text-muted">아직 댓글이 없습니다.</p>
         {{/comments}}
 
+    </div>
+</div>
 
 <style>
     .badge-status {
@@ -143,13 +156,11 @@
 </style>
 
 <script>
-    // 상태 변경 JS는 삭제했고, 기존의 삭제 기능만 남겨두었습니다.
     function deleteProduct(productId) {
         if (!confirm("정말 이 상품을 삭제하시겠습니까?")) {
             return;
         }
 
-        // 백엔드 통제실에 DELETE 신호를 다이렉트로 전송!
         fetch('/api/product/' + productId, {
             method: 'DELETE',
             headers: {
@@ -159,7 +170,7 @@
                 .then(response => {
                     if (response.ok) {
                         alert("상품이 삭제되었습니다.");
-                        window.location.href = '/main'; // 삭제 성공 후 메인 목록으로 복귀
+                        window.location.href = '/main';
                     } else {
                         alert("상품 삭제가 안됐습니다.");
                     }

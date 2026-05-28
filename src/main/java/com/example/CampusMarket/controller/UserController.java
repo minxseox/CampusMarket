@@ -5,16 +5,13 @@ import com.example.CampusMarket.entity.SiteUser;
 import com.example.CampusMarket.dto.UserForm;
 import com.example.CampusMarket.repository.ProductRepository;
 import com.example.CampusMarket.service.UserService;
+import com.example.CampusMarket.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import com.example.CampusMarket.entity.Product;
-import com.example.CampusMarket.service.ProductService;
-import java.util.List;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,6 +28,9 @@ public class UserController {
     @GetMapping("/signup")
     public String signup(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession(false);
+        // 헤더 에러 방지를 위해 빈 keyword 추가
+        model.addAttribute("keyword", "");
+
         if (session != null) {
             SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
             if (loginUser != null) {
@@ -49,6 +49,9 @@ public class UserController {
     @GetMapping("/login")
     public String login(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession(false);
+        // 헤더 에러 방지를 위해 빈 keyword 추가
+        model.addAttribute("keyword", "");
+
         if (session != null) {
             SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
             if (loginUser != null) {
@@ -81,6 +84,9 @@ public class UserController {
         return "redirect:/";
     }
 
+    /**
+     * 마이페이지: 회원 정보 및 내가 올린 상품 리스트 조회
+     */
     @GetMapping("/mypage")
     public String mypage(HttpServletRequest request, Model model) {
 
@@ -89,42 +95,24 @@ public class UserController {
             return "redirect:/user/login";
         }
 
+        // 헤더 에러 방지를 위해 빈 keyword 추가
+        model.addAttribute("keyword", "");
+
         SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+
+        // 1. 유저 정보 설정
         model.addAttribute("nickname", loginUser.getNickname());
         model.addAttribute("email", loginUser.getEmail());
 
         if (loginUser.getCreatedDate() != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
-            String formattedDate = loginUser.getCreatedDate().format(formatter);
-            model.addAttribute("createdDate", formattedDate);
+            model.addAttribute("createdDate", loginUser.getCreatedDate().format(formatter));
         } else {
             model.addAttribute("createdDate", "정보 없음");
         }
 
+        // 2. 내가 올린 상품 조회
         List<Product> products = productRepository.findByAuthor(loginUser);
-        model.addAttribute("products", products);
-
-        return "user/mypage";
-    }
-
-    @GetMapping("/mypage")
-    public String mypage(HttpServletRequest request, Model model) {
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("loginUser") == null) {
-            return "redirect:/user/login";
-        }
-
-        SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
-
-        model.addAttribute("nickname", loginUser.getNickname());
-
-        List<Product> products = productService.findAll()
-                .stream()
-                .filter(product -> product.getAuthor() != null
-                        && product.getAuthor().getId().equals(loginUser.getId()))
-                .toList();
-
         model.addAttribute("products", products);
 
         return "user/mypage";

@@ -1,0 +1,71 @@
+{{> layout/header}}
+
+<div class="container my-5">
+    <a href="/product/{{product.id}}" class="text-decoration-none text-primary mb-4 d-inline-block">← 뒤로가기</a>
+    <h3 class="fw-bold mb-4">결제</h3>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">결제 정보</h5>
+                    <form action="/product/{{product.id}}/payment" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">카드 번호</label>
+                            <input type="text" class="form-control" placeholder="1234 5678 9012 3456" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">카드 소유자명</label>
+                            <input type="text" class="form-control" placeholder="홍길동" required>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label class="form-label text-muted">유효기간</label>
+                                <input type="text" class="form-control" placeholder="MM/YY" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-muted">CVV</label>
+                                <input type="password" class="form-control" placeholder="123" required maxlength="3">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100 py-3 fw-bold">결제하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">주문 요약</h5>
+                    <p class="text-muted mb-1 small">상품</p>
+                    <p class="fw-bold fs-5">{{product.title}}</p>
+
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">상품 가격</span>
+                        <span>₩{{product.price}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">배송료</span>
+                        <span>무료</span>
+                    </div>
+
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fw-bold">총 결제액</span>
+                        <span class="fw-bold fs-4">₩{{product.price}}</span>
+                    </div>
+
+                    <div class="bg-light p-3 rounded">
+                        <p class="text-muted small mb-1">구매자</p>
+                        <p class="fw-bold mb-0">{{loginUser.nickname}}</p>
+                        <p class="text-muted small mb-0">{{loginUser.email}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> layout/footer}}

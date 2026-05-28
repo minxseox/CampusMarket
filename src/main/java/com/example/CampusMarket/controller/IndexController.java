@@ -108,6 +108,9 @@ public class IndexController {
         model.addAttribute("isAuthor", isAuthor);
         model.addAttribute("comments", comments);
 
+        // 💡 [추가] 헤더 검색창 에러 방지를 위해 빈 keyword 값을 담아줍니다.
+        model.addAttribute("keyword", "");
+
         // templates/product/product_detail.mustache 가동!
         return "product/product_detail";
     }

@@ -16,6 +16,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.format.DateTimeFormatter;
+
 @RequiredArgsConstructor
 @Controller
 public class ProductController {
@@ -27,7 +29,15 @@ public class ProductController {
      * 1. 상품 등록 페이지로 이동
      */
     @GetMapping("/product/save")
-    public String productSave() {
+    public String productSave(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loginUser") != null) {
+            SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+            model.addAttribute("nickname", loginUser.getNickname());
+        } else {
+            return "redirect:/user/login";
+        }
+        model.addAttribute("keyword", "");
         return "product/product_save";
     }
 
@@ -50,13 +60,12 @@ public class ProductController {
         }
         SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
 
-        // SiteUser 객체를 직접 넘겨 작성자 정보 저장
         productService.save(
-        requestDto.getTitle(),
-        requestDto.getContent(),
-        requestDto.getPrice(),
-        requestDto.getCategory(),
-        loginUser
+                requestDto.getTitle(),
+                requestDto.getContent(),
+                requestDto.getPrice(),
+                requestDto.getCategory(),
+                loginUser
         );
 
         return "success";
@@ -93,14 +102,12 @@ public class ProductController {
         }
         SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
 
-        // 작성자 닉네임으로 권한 검증 수행
         productService.update(id, requestDto.getTitle(), requestDto.getContent(), requestDto.getPrice(), loginUser.getNickname());
-
         return "success";
     }
 
     /**
-     * 5. 상품 상태 변경 (순수 HTML 폼 방식)
+     * 5. 상품 상태 변경
      */
     @PutMapping("/product/{id}/status")
     public String changeStatusForm(@PathVariable Long id,
@@ -123,39 +130,38 @@ public class ProductController {
         }
 
         productService.changeStatus(id, finalStatus, loginUser.getNickname());
-
         return "redirect:/product/" + id;
     }
 
+    /**
+     * 6. 댓글 등록
+     */
     @PostMapping("/product/{productId}/comments")
     public String saveComment(@PathVariable Long productId,
-                          @RequestParam String content,
-                          HttpServletRequest request) {
+                              @RequestParam String content,
+                              HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-
         if (session == null || session.getAttribute("loginUser") == null) {
             return "redirect:/user/login";
         }
-
         SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
-
         commentService.save(productId, content, loginUser);
-
         return "redirect:/product/" + productId;
     }
 
+    /**
+     * 7. 댓글 삭제
+     */
     @PostMapping("/comment/{commentId}/delete")
     public String deleteComment(@PathVariable Long commentId,
-                            @RequestParam Long productId,
-                            HttpServletRequest request,
-                            RedirectAttributes redirectAttributes) {
+                                @RequestParam Long productId,
+                                HttpServletRequest request,
+                                RedirectAttributes redirectAttributes) {
 
         HttpSession session = request.getSession(false);
-
         if (session == null || session.getAttribute("loginUser") == null) {
             return "redirect:/user/login";
         }
-
         SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
 
         try {
@@ -163,7 +169,68 @@ public class ProductController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-
         return "redirect:/product/" + productId;
+    }
+
+    // ==========================================
+    // 💡 아래부터 이번에 새로 추가된 '결제 관련' 코드입니다!
+    // ==========================================
+
+    /**
+     * 8. 결제 폼(화면)으로 이동
+     */
+    @GetMapping("/product/{id}/payment")
+    public String paymentForm(@PathVariable Long id, HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loginUser") == null) {
+            return "redirect:/user/login";
+        }
+
+        SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+        Product product = productService.findById(id);
+
+        model.addAttribute("product", product);
+        model.addAttribute("loginUser", loginUser);
+
+        // 헤더 에러 방지 및 로그인 상태 유지
+        model.addAttribute("nickname", loginUser.getNickname());
+        model.addAttribute("keyword", "");
+
+        return "product/payment";
+    }
+
+    /**
+     * 9. 결제 처리 로직 (사용자가 폼에서 '결제하기' 누르면 실행)
+     */
+    @PostMapping("/product/{id}/payment")
+    public String processPayment(@PathVariable Long id) {
+        // 원래는 여기에 카드 승인 확인, 상품 상태 '판매완료'로 변경 등의 로직이 들어갑니다.
+        return "redirect:/product/" + id + "/payment/success";
+    }
+
+    /**
+     * 10. 결제 성공(영수증) 화면으로 이동
+     */
+    @GetMapping("/product/{id}/payment/success")
+    public String paymentSuccess(@PathVariable Long id, HttpServletRequest request, Model model) {
+        Product product = productService.findById(id);
+
+        // 현재 로그인 유저 정보 확인 (헤더용)
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loginUser") != null) {
+            SiteUser loginUser = (SiteUser) session.getAttribute("loginUser");
+            model.addAttribute("nickname", loginUser.getNickname());
+        }
+
+        // 가상의 주문번호 및 현재 결제된 시간 생성
+        String orderNumber = "ORD-" + java.time.LocalDate.now().toString().replace("-", "") + "-" + (int)(Math.random() * 1000);
+        String paymentTime = java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy. MM. dd. a hh:mm:ss"));
+
+        model.addAttribute("product", product);
+        model.addAttribute("orderNumber", orderNumber);
+        model.addAttribute("paymentTime", paymentTime);
+        model.addAttribute("keyword", "");
+
+        return "product/payment_success";
     }
 }

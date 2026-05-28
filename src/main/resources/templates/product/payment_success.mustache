@@ -1,0 +1,53 @@
+{{> layout/header}}
+
+<div class="container my-5 d-flex justify-content-center">
+    <div class="card shadow-sm border-0" style="max-width: 600px; width: 100%;">
+        <div class="card-body p-5">
+            <div class="text-center mb-5">
+                <div class="d-inline-flex justify-content-center align-items-center rounded-circle border border-3 border-success mb-3" style="width: 80px; height: 80px;">
+                    <span class="text-success" style="font-size: 2.5rem;">✓</span>
+                </div>
+                <h2 class="fw-bold">결제 완료</h2>
+                <p class="text-muted">주문이 정상적으로 처리되었습니다.</p>
+            </div>
+
+            <div class="border-top border-bottom py-4 mb-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">주문 번호</span>
+                    <span class="fw-bold">{{orderNumber}}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">상품명</span>
+                    <span class="fw-bold">{{product.title}}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">결제 금액</span>
+                    <span class="fw-bold text-success fs-5">₩{{product.price}}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">결제 수단</span>
+                    <span class="fw-bold">신용카드</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">결제 시간</span>
+                    <span class="fw-bold">{{paymentTime}}</span>
+                </div>
+            </div>
+
+            <div class="alert alert-primary mb-4" role="alert" style="background-color: #f8f9fa; border-color: #e9ecef;">
+                📌 <strong>안내:</strong> 판매자와 연락하여 거래 일정을 조율해주세요. 거래 완료 후 상품 상태를 "판매완료"로 변경해주시기 바랍니다.
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <a href="/" class="btn btn-outline-dark w-100 py-3 fw-bold">홈으로 돌아가기</a>
+                </div>
+                <div class="col-6">
+                    <a href="/user/mypage" class="btn btn-dark w-100 py-3 fw-bold">마이페이지</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> layout/footer}}
