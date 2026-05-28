@@ -45,13 +45,10 @@
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <span class="fw-bold" style="font-size: 1.15rem;">{{price}}원</span>
 
-                                <span class="badge" style="
-                                        background-color: {{statusColor}};
-                                        color: {{statusTextColor}};
-                                        padding: 8px 12px;
-                                        font-weight: 500;
-                                        border-radius: 6px;
-                                        ">
+                                <span class="badge-status
+                                    {{#sale}}status-sale{{/sale}}
+                                    {{#reserved}}status-reserved{{/reserved}}
+                                    {{#sold}}status-sold{{/sold}}">
                                     {{status}}
                                 </span>
                             </div>
@@ -71,5 +68,32 @@
 
     </div>
 </div>
+
+<style>
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-sale {
+        background-color: #e8f9f1;
+        color: #11c16e;
+        border: 1px solid #b8f0d2;
+    }
+
+    .status-reserved {
+        background-color: #fff6e6;
+        color: #ff9f00;
+        border: 1px solid #ffd27a;
+    }
+
+    .status-sold {
+        background-color: #f1f3f5;
+        color: #868e96;
+        border: 1px solid #d5d8dc;
+    }
+</style>
 
 {{> layout/footer}}
